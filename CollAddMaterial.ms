@@ -2,20 +2,32 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial = (
     for obj in objects do (
         convertToPoly obj
         weldAndSmoothGroup obj
+        print (format "Материалов %\n" newMaterial.count)
+        print (format "Текстур %\n" textureName.count)        
         if classof obj.material == MultiMaterial then (
             -- Работаем с мультиматериалом
             local multiMat = obj.material
-            for i = 1 to multiMat.numsubs do (
-                local subMat = multiMat[i]
-                if classof subMat.diffuseMap == BitmapTex and subMat.diffuseMap.fileName == textureName then (
-                    multiMat[i] = newMaterial -- Заменяем суб-материал
+            for k = 1 to newMaterial.count do (
+                for i = 1 to multiMat.numsubs do (
+                    local subMat = multiMat[i]
+                    for j = 1 to textureName.count do (
+                        if classof subMat.diffuseMap == BitmapTex and subMat.diffuseMap.fileName == textureName[j] then (
+                            print("ZAMENILI")
+                            multiMat[i] = newMaterial[k] -- Заменяем суб-материал
+                        )
+                    )
                 )
             )
+
+        --ВЫЛЕТАЕТ ОШИБКА ПРИ ПОВТОНОМ НАЛОЖЕНИИ МАТЕРИАЛОВ UNKOWN diffuseMap
+
         ) else (
             -- Работаем с одиночным материалом
             local mat = obj.material
-            if classof mat.diffuseMap == BitmapTex and mat.diffuseMap.fileName == textureName then (
-                obj.material = newMaterial -- Заменяем материал объекта
+            for j = 1 to textureName.count do (
+                if classof mat.diffuseMap == BitmapTex and mat.diffuseMap.fileName == textureName[j] then (
+                    obj.material = newMaterial[j] -- Заменяем материал объекта
+                )
             )
         )
     )
@@ -33,8 +45,27 @@ fn weldAndSmoothGroup obj = (
         convertToPoly obj
 )
 
+-- fn addButtonsToArray matBtn_1 matBtn_2 = (
+--     myMaterialButtons = #()
+
+--     append myMaterialButtons matBtn_1
+--     append myMaterialButtons matBtn_2
+
+--     return myMaterialButtons
+-- )
+
+fn addTexturesToArray checkBox comboBox textureArray = (
+    if checkBox.checked do (
+        for i = 1 to comboBox.items.count do (
+            append textureArray comboBox.items[i]
+        )
+    )
+)
+
 -- Создание интерфейса
 rollout textureMaterialApplicator "Texture material applicator"(
+    
+    -----------------------ГРУППА 1-----------------------
     -- Группа материала
     groupBox grB_1 "Material 1" pos:[0, 10] width:160 height:100
     -- Чекбокс
@@ -42,46 +73,95 @@ rollout textureMaterialApplicator "Texture material applicator"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_1 "Select material" pos:[5, 30] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_1  pos:[5, 50] items:#("Grass_128HV.png", "Grass_128HV2.png", "" ,"") width:150 height:3
+    combobox cb_1  pos:[5, 50] items:#("Grass_128HV.png", "Grass_128HV2.png") width:150 height:3
+
+    -----------------------ГРУППА 2-----------------------
+    -- Группа материала
+    groupBox grB_2 "Material 2" pos:[180, 10] width:160 height:100
+    -- Чекбокс
+    checkbox mt_2_cb checked:false pos:[240, 10]
+    -- Элемент для перетаскивания материала
+    MaterialButton matBtn_2 "Select material" pos:[185, 30] width:150 height:20 filter:material
+    -- Поле для ввода имени текстуры
+    combobox cb_2  pos:[185, 50] items:#("Grass_128HV.png", "Grass_128HV2.png") width:150 height:3
+
+
+
+
+    ------------------------------------------------
     -- Кнопка применения материала
     button btnApply "Apply material" width:300
     -- by EgasVegas
     label lbl1 "by EgasVegas"  width:150 height:20 align:#center style_sunkenedge: true
 
-
-    -- on textureMaterialApplicator open do (
-    --     if mt_1_cb.checked = false then (
-    --         matBtn_1.enabled = false
-    --         cb_1.enabled = false
-    --     )
-    --  )
-
+    on textureMaterialApplicator open do (
+        if (mt_2_cb.checked == false) then (
+            matBtn_2.enabled = false
+            cb_2.enabled = false
+        )
+     )
+    -----------------------ОБРАБОТЧИКИ ЧЕКБОКСОВ-----------------------
      on mt_1_cb changed theState do (
         matBtn_1.enabled = theState
         cb_1.enabled = theState
      )
 
+     on mt_2_cb changed theState do (
+        matBtn_2.enabled = theState
+        cb_2.enabled = theState
+     )
+    -----------------------ОБРАБОТЧИКИ СПИСКОВ-----------------------
     on cb_1 entered txt do (
         cb_1.selected = txt
     )
 
-    on matBtn picked m do (
+    on cb_2 entered txt do (
+        cb_2.selected = txt
+    )
+
+    on matBtn_1 picked m do (
         if classof m == GTA_COLSurface then (
-            matBtn.material = m
-            matBtn.caption = m.name
+            matBtn_1.material = m
+            matBtn_1.caption = m.name
+        ) else (
+            messageBox "Wrong format."
+        )
+    )
+
+    on matBtn_2 picked m do (
+        if classof m == GTA_COLSurface then (
+            matBtn_2.material = m
+            matBtn_2.caption = m.name
         ) else (
             messageBox "Wrong format."
         )
     )
 
     on btnApply pressed do (
-        if matBtn.material != undefined and txtTextureName.text != "" then (
-            applyMaterialToPolygonsWithTexture txtTextureName.text matBtn.material
+        local materialArray = #() -- Создаем массив для хранения материалов
+        local textureArray = #() -- Создаем массив для хранения списков текстур
+    
+        -- Проверяем состояние чекбокса и добавляем соответствующие материалы и текстуры в массивы
+        if mt_1_cb.checked do (
+            append materialArray matBtn_1.material
+        )
+        addTexturesToArray mt_1_cb cb_1 textureArray
+    
+        if mt_2_cb.checked do (
+            append materialArray matBtn_2.material
+        )
+        addTexturesToArray mt_2_cb cb_2 textureArray
+        -- Проверяем, что было выбрано хотя бы одно сочетание материала и текстуры
+        if materialArray.count > 0 and textureArray.count > 0 then (
+            -- Вызываем функцию и передаем ей массивы материалов и текстур
+            applyMaterialToPolygonsWithTexture textureArray materialArray
         ) else (
             messageBox "Please specify both a material and a texture name."
         )
     )
+    
 )
 
+
 -- Отображение интерфейса
-createdialog textureMaterialApplicator 500 330
+createdialog textureMaterialApplicator 340 330
