@@ -1,26 +1,36 @@
-fn applyMaterialToPolygonsWithTexture textureName newMaterial = (
-    for obj in objects do (
+fn applyMaterialToPolygonsWithTexture textureName newMaterial = 
+(
+    for obj in objects do 
+    (
         convertToPoly obj
         weldAndSmoothGroup obj
         print (format "Материалов %\n" newMaterial.count)
         print (format "Текстур %\n" textureName.count)        
-        if classof obj.material == MultiMaterial then (
+        if classof obj.material == MultiMaterial then 
+        (
             -- Работаем с мультиматериалом
             local multiMat = obj.material
-            for k = 1 to newMaterial.count do (
-                for i = 1 to multiMat.numsubs do (
+            for k = 1 to newMaterial.count do 
+            (
+                for i = 1 to multiMat.numsubs do 
+                (
                     local subMat = multiMat[i]
-                    for j = 1 to textureName.count do (
-                        if classof subMat.diffuseMap == BitmapTex and subMat.diffuseMap.fileName == textureName[j] then (
-                            print("ZAMENILI")
-                            multiMat[i] = newMaterial[k] -- Заменяем суб-материал
+                    for j = 1 to textureName.count do 
+                    (
+                        if isProperty subMat #diffuseMap then 
+                        (
+                            if classof subMat.diffuseMap == BitmapTex and subMat.diffuseMap.fileName == textureName[j] then 
+                            (
+                                    print("ZAMENILI")
+                                    multiMat[i] = newMaterial[k] -- Заменяем суб-материал
+                            )
+                        )
+                        else (
+                            print ("diffuseMap = null")
                         )
                     )
                 )
             )
-
-        --ВЫЛЕТАЕТ ОШИБКА ПРИ ПОВТОНОМ НАЛОЖЕНИИ МАТЕРИАЛОВ UNKOWN diffuseMap
-
         ) else (
             -- Работаем с одиночным материалом
             local mat = obj.material
