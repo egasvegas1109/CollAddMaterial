@@ -27,7 +27,7 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial =
                         (
                             print(format "Текстура на модели %\n" (toLower(getFilenameFile(subMat.diffuseMap.fileName))))
                             print(format "Текстура ожидаемая %\n" (toLower(textureName[j])))
-                            if classof subMat.diffuseMap == BitmapTex and  toLower(getFilenameFile(subMat.diffuseMap.fileName))== toLower(textureName[j]) then 
+                            if classof subMat.diffuseMap == BitmapTex and toLower(getFilenameFile(subMat.diffuseMap.fileName)) == toLower(textureName[j]) then 
                             (
                                 -- Добавляем индекс текстуры в массив для замены
                                 append texturesToReplace i
@@ -85,7 +85,10 @@ fn weldAndSmoothGroup obj = (
 fn addTexturesToArray checkBox comboBox textureArray = (
     if checkBox.checked do (
         for i = 1 to comboBox.items.count do (
-            append textureArray comboBox.items[i]
+            if (comboBox.items[i] != "") do(
+                append textureArray comboBox.items[i]
+                print(i)
+            )
         )
     )
 )
@@ -107,7 +110,7 @@ rollout textureMaterialApplicator "Texture material applicator"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_1 "Select material" pos:[5, 30] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_1  pos:[5, 50] items:#("Grass_128HV", "Grass_128HV2") width:150 height:3
+    combobox cb_1  pos:[5, 50] items:#("Grass_128HV", "Grass_128HV2", "") width:150 height:3
 
     -----------------------ГРУППА 2-----------------------
     -- Группа материала
@@ -117,7 +120,7 @@ rollout textureMaterialApplicator "Texture material applicator"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_2 "Select material" pos:[185, 30] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_2  pos:[185, 50] items:#("gb_sand_bottom", "gb_sand_bottom2") width:150 height:3
+    combobox cb_2  pos:[185, 50] items:#("gb_sand_bottom", "gb_sand_bottom2", "") width:150 height:3
 
 
 
@@ -216,7 +219,5 @@ rollout textureMaterialApplicator "Texture material applicator"(
     )
     
 )
-
-
 -- Отображение интерфейса
 createdialog textureMaterialApplicator 340 330
