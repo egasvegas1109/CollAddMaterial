@@ -34,13 +34,13 @@ fn weldAndSmoothGroup obj = (
 )
 
 -- Создание интерфейса
-rollout textureMaterialApplicator "Texture Material Applicator"(
+rollout textureMaterialApplicator "Texture material applicator"(
     -- Элемент для перетаскивания материала
-    MaterialButton matBtn "Drag Material Here" across:2 width:160 height:40 filter:material
+    MaterialButton matBtn "Select material" across:2 width:160 height:40 filter:material
     -- Поле для ввода имени текстуры
-    editText txtTextureName "Texture Name" width:160
+    editText txtTextureName "Texture name" width:160
     -- Кнопка применения материала
-    button btnApply "Apply Material" width:160
+    button btnApply "Apply material" width:160
     -- by EgasVegas
     label lbl1 "by EgasVegas"  width:150 height:50 align:#center style_sunkenedge: true
 
@@ -49,11 +49,11 @@ rollout textureMaterialApplicator "Texture Material Applicator"(
     )
 
     on matBtn picked m do (
-        if classof m == Material then (
+        if classof m == GTA_COLSurface then (
             matBtn.material = m
             matBtn.caption = m.name
         ) else (
-            messageBox "Please drag a material onto the button."
+            messageBox "Wrong format."
         )
     )
 
