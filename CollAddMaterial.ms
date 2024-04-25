@@ -1,6 +1,7 @@
 fn applyMaterialToPolygonsWithTexture textureName newMaterial = (
     for obj in objects do (
         convertToPoly obj
+        weldAndSmoothGroup obj
         if classof obj.material == MultiMaterial then (
             -- Работаем с мультиматериалом
             local multiMat = obj.material
@@ -21,16 +22,27 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial = (
     messageBox "Material has been applied to all matching textures."
 )
 
+fn weldAndSmoothGroup obj = (
+    obj.weldThreshold=0.001
+    polyOp.weldVertsByThreshold obj #{1..obj.numVerts}
+
+        -- Применение автоматического сглаживания
+        smoothMod = Smooth()
+        smoothMod.autoSmooth = true
+        addModifier obj smoothMod
+        convertToPoly obj
+)
+
 -- Создание интерфейса
 rollout textureMaterialApplicator "Texture Material Applicator"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn "Drag Material Here" across:2 width:160 height:40 filter:material
     -- Поле для ввода имени текстуры
     editText txtTextureName "Texture Name" width:160
-
-
     -- Кнопка применения материала
     button btnApply "Apply Material" width:160
+    -- by EgasVegas
+    label lbl1 "by EgasVegas"  width:150 height:50 align:#center style_sunkenedge: true
 
     on textureMaterialApplicator open do (
         txtTextureName.text = "Grass_128HV2.png"
