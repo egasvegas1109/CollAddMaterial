@@ -35,17 +35,34 @@ fn weldAndSmoothGroup obj = (
 
 -- Создание интерфейса
 rollout textureMaterialApplicator "Texture material applicator"(
+    -- Группа материала
+    groupBox grB_1 "Material 1" pos:[0, 10] width:160 height:100
+    -- Чекбокс
+    checkbox mt_1_cb checked:true pos:[60, 10]
     -- Элемент для перетаскивания материала
-    MaterialButton matBtn "Select material" across:2 width:160 height:40 filter:material
+    MaterialButton matBtn_1 "Select material" pos:[5, 30] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    editText txtTextureName "Texture name" width:160
+    combobox cb_1  pos:[5, 50] items:#("Grass_128HV.png", "Grass_128HV2.png", "" ,"") width:150 height:3
     -- Кнопка применения материала
-    button btnApply "Apply material" width:160
+    button btnApply "Apply material" width:300
     -- by EgasVegas
-    label lbl1 "by EgasVegas"  width:150 height:50 align:#center style_sunkenedge: true
+    label lbl1 "by EgasVegas"  width:150 height:20 align:#center style_sunkenedge: true
 
-    on textureMaterialApplicator open do (
-        txtTextureName.text = "Grass_128HV2.png"
+
+    -- on textureMaterialApplicator open do (
+    --     if mt_1_cb.checked = false then (
+    --         matBtn_1.enabled = false
+    --         cb_1.enabled = false
+    --     )
+    --  )
+
+     on mt_1_cb changed theState do (
+        matBtn_1.enabled = theState
+        cb_1.enabled = theState
+     )
+
+    on cb_1 entered txt do (
+        cb_1.selected = txt
     )
 
     on matBtn picked m do (
@@ -67,4 +84,4 @@ rollout textureMaterialApplicator "Texture material applicator"(
 )
 
 -- Отображение интерфейса
-createdialog textureMaterialApplicator 500 330 style:#(#style_toolwindow, #style_sysmenu)
+createdialog textureMaterialApplicator 500 330
