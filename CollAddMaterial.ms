@@ -74,11 +74,11 @@ fn weldAndSmoothGroup obj = (
     obj.weldThreshold=0.001
     polyOp.weldVertsByThreshold obj #{1..obj.numVerts}
 
-        -- Применение автоматического сглаживания
-        smoothMod = Smooth()
-        smoothMod.autoSmooth = true
-        addModifier obj smoothMod
-        convertToPoly obj
+    -- Применение автоматического сглаживания
+    smoothMod = Smooth()
+    smoothMod.autoSmooth = true
+    addModifier obj smoothMod
+    convertToPoly obj
 )
 
 
@@ -101,7 +101,6 @@ fn addArrayToArray array arrayChild = (
 
 -- Создание интерфейса
 rollout textureMaterialApplicator "Texture material applicator"(
-    
     -----------------------ГРУППА 1-----------------------
     -- Группа материала
     groupBox grB_1 "Material 1" pos:[0, 10] width:160 height:100
@@ -110,7 +109,7 @@ rollout textureMaterialApplicator "Texture material applicator"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_1 "Select material" pos:[5, 30] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_1  pos:[5, 50] items:#("Grass_128HV", "Grass_128HV2", "") width:150 height:3
+    combobox cb_1  pos:[5, 50] items:#("Grass_128HV", "Grass_128HV2", "", "") width:150 height:3
 
     -----------------------ГРУППА 2-----------------------
     -- Группа материала
@@ -120,21 +119,45 @@ rollout textureMaterialApplicator "Texture material applicator"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_2 "Select material" pos:[185, 30] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_2  pos:[185, 50] items:#("gb_sand_bottom", "gb_sand_bottom2", "") width:150 height:3
+    combobox cb_2  pos:[185, 50] items:#("gb_sand_bottom", "gb_sand_bottom2", "", "") width:150 height:3
 
+        -----------------------ГРУППА 3-----------------------
+    -- Группа материала
+    groupBox grB_3 "Material 3" pos:[0, 120] width:160 height:100
+    -- Чекбокс
+    checkbox mt_3_cb checked:false pos:[60, 120]
+    -- Элемент для перетаскивания материала
+    MaterialButton matBtn_3 "Select material" pos:[5, 140] width:150 height:20 filter:material
+    -- Поле для ввода имени текстуры
+    combobox cb_3  pos:[5, 160] items:#("tratur", "tratur2", "", "") width:150 height:3
 
-
-
-    ------------------------------------------------
+    -----------------------ГРУППА 4-----------------------
+    -- Группа материала
+    groupBox grB_4 "Material 4" pos:[180, 120] width:160 height:100
+    -- Чекбокс
+    checkbox mt_4_cb checked:false pos:[240, 120]
+    -- Элемент для перетаскивания материала
+    MaterialButton matBtn_4 "Select material" pos:[185, 140] width:150 height:20 filter:material
+    -- Поле для ввода имени текстуры
+    combobox cb_4  pos:[185, 160] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
+    ------------------------------------------------------
     -- Кнопка применения материала
-    button btnApply "Apply material" width:300
+    button btnApply "Apply material" pos:[15, 250] width:300
     -- by EgasVegas
-    label lbl1 "by EgasVegas"  width:150 height:20 align:#center style_sunkenedge: true
-
+    label lbl1 "by EgasVegas"  pos:[0, 310] width:150 height:20 align:#center style_sunkenedge: true
+    ------------------------------------------------------
     on textureMaterialApplicator open do (
         if (mt_2_cb.checked == false) then (
             matBtn_2.enabled = false
             cb_2.enabled = false
+        )
+        if (mt_3_cb.checked == false) then (
+            matBtn_3.enabled = false
+            cb_3.enabled = false
+        )
+        if (mt_4_cb.checked == false) then (
+            matBtn_4.enabled = false
+            cb_4.enabled = false
         )
      )
     -----------------------ОБРАБОТЧИКИ ЧЕКБОКСОВ-----------------------
@@ -147,6 +170,16 @@ rollout textureMaterialApplicator "Texture material applicator"(
         matBtn_2.enabled = theState
         cb_2.enabled = theState
      )
+
+     on mt_3_cb changed theState do (
+        matBtn_3.enabled = theState
+        cb_3.enabled = theState
+     )
+
+     on mt_4_cb changed theState do (
+        matBtn_4.enabled = theState
+        cb_4.enabled = theState
+     )
     -----------------------ОБРАБОТЧИКИ СПИСКОВ-----------------------
     on cb_1 entered txt do (
         cb_1.selected = txt
@@ -154,6 +187,14 @@ rollout textureMaterialApplicator "Texture material applicator"(
 
     on cb_2 entered txt do (
         cb_2.selected = txt
+    )
+
+    on cb_3 entered txt do (
+        cb_3.selected = txt
+    )
+
+    on cb_4 entered txt do (
+        cb_4.selected = txt
     )
 
     on matBtn_1 picked m do (
@@ -174,6 +215,24 @@ rollout textureMaterialApplicator "Texture material applicator"(
         )
     )
 
+    on matBtn_3 picked m do (
+        if classof m == GTA_COLSurface then (
+            matBtn_3.material = m
+            matBtn_3.caption = m.name
+        ) else (
+            messageBox "Wrong format."
+        )
+    )
+
+    on matBtn_4 picked m do (
+        if classof m == GTA_COLSurface then (
+            matBtn_4.material = m
+            matBtn_4.caption = m.name
+        ) else (
+            messageBox "Wrong format."
+        )
+    )
+
     on btnApply pressed do (
         local materialArray = #()
         local textureArray = #()
@@ -181,8 +240,14 @@ rollout textureMaterialApplicator "Texture material applicator"(
         local materialArray_1 = #() -- Создаем массив для хранения материала 1
         local textureArray_1 = #() -- Создаем массив для хранения списков текстур для материала 1
 
-        local materialArray_2 = #() -- Создаем массив для хранения материала 1
-        local textureArray_2 = #() -- Создаем массив для хранения списков текстур для материала 1
+        local materialArray_2 = #() -- Создаем массив для хранения материала 2
+        local textureArray_2 = #() -- Создаем массив для хранения списков текстур для материала 2
+
+        local materialArray_3 = #() -- Создаем массив для хранения материала 3
+        local textureArray_3 = #() -- Создаем массив для хранения списков текстур для материала 3
+
+        local materialArray_4 = #() -- Создаем массив для хранения материала 4
+        local textureArray_4 = #() -- Создаем массив для хранения списков текстур для материала 4
     
         -- Проверяем состояние чекбокса и добавляем соответствующие материалы и текстуры в массивы
         if mt_1_cb.checked and matBtn_1.material != undefined do (
@@ -190,17 +255,31 @@ rollout textureMaterialApplicator "Texture material applicator"(
             addTexturesToArray mt_1_cb cb_1 textureArray_1
         )
 
-    
         if mt_2_cb.checked and matBtn_2.material != undefined do (
             append materialArray_2 matBtn_2.material
             addTexturesToArray mt_2_cb cb_2 textureArray_2
         )
 
+        if mt_3_cb.checked and matBtn_3.material != undefined do (
+            append materialArray_3 matBtn_3.material
+            addTexturesToArray mt_3_cb cb_3 textureArray_3
+        )
+
+        if mt_4_cb.checked and matBtn_4.material != undefined do (
+            append materialArray_4 matBtn_4.material
+            addTexturesToArray mt_4_cb cb_4 textureArray_4
+        )
+        --Создание многомерного массива материалов
         addArrayToArray materialArray materialArray_1
         addArrayToArray materialArray materialArray_2
-
+        addArrayToArray materialArray materialArray_3
+        addArrayToArray materialArray materialArray_4
+        
+        --Создание многомерного массива текстур
         addArrayToArray textureArray textureArray_1
         addArrayToArray textureArray textureArray_2
+        addArrayToArray textureArray textureArray_3
+        addArrayToArray textureArray textureArray_4
 
         -- Проверяем, что было выбрано хотя бы одно сочетание материала и текстуры
         if materialArray.count > 0 and textureArray.count > 0 then (
