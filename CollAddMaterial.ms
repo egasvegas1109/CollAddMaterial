@@ -1,3 +1,12 @@
+/*
+ - CollAddMaterials 1.0
+  for 3ds Max 2009+
+
+  https://github.com/egasvegas1109/CollAddMaterial
+  Author: EgasVegas
+  vk.com/egasvegas
+  t.me/egasvegas
+*/
 fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_models = 
 (
     models_prog.value = 0
