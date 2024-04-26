@@ -141,6 +141,7 @@ rollout textureMaterialApplicator "Texture material applicator"(
     -- Поле для ввода имени текстуры
     combobox cb_4  pos:[185, 160] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
     ------------------------------------------------------
+    progressbar doit_prog color:green
     -- Кнопка применения материала
     button btnApply "Apply material" pos:[15, 250] width:300
     -- by EgasVegas
@@ -234,6 +235,8 @@ rollout textureMaterialApplicator "Texture material applicator"(
     )
 
     on btnApply pressed do (
+        doit_prog.value = 0
+        
         local materialArray = #()
         local textureArray = #()
 
@@ -289,6 +292,7 @@ rollout textureMaterialApplicator "Texture material applicator"(
 
             for i = 1 to materialArray.count do (
                 applyMaterialToPolygonsWithTexture textureArray[i] materialArray[i]
+                doit_prog.value += 100/materialArray.count + 1
             )
 
             messageBox "Done!"
