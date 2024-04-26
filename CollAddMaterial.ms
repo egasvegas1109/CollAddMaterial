@@ -1,7 +1,9 @@
-fn applyMaterialToPolygonsWithTexture textureName newMaterial = 
+fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_models = 
 (
+    models_prog.value = 0
     for obj in selection do 
     (
+        prgrs_models.text = obj.name
         convertToPoly obj
         weldAndSmoothGroup obj
         print (format "Материалов %\n" newMaterial.count)
@@ -66,6 +68,7 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial =
                 obj.material = newMaterial[idx] -- Заменяем материал объекта
             )
         )
+        models_prog.value += 100/selection.count + 1
     )
 )
 
@@ -100,52 +103,55 @@ fn addArrayToArray array arrayChild = (
 )
 
 -- Создание интерфейса
-rollout textureMaterialApplicator "Texture material applicator"(
+rollout textureMaterialApplicator "CollAddMaterial"(
+    -- About
+    button btn_about "About" width:92 height:23	 align:#right
     -----------------------ГРУППА 1-----------------------
     -- Группа материала
-    groupBox grB_1 "Material 1" pos:[0, 10] width:160 height:100
+    groupBox grB_1 "Material 1" pos:[0, 30] width:160 height:100
     -- Чекбокс
-    checkbox mt_1_cb checked:true pos:[60, 10]
+    checkbox mt_1_cb checked:true pos:[60, 30]
     -- Элемент для перетаскивания материала
-    MaterialButton matBtn_1 "Select material" pos:[5, 30] width:150 height:20 filter:material
+    MaterialButton matBtn_1 "Select material" pos:[5, 50] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_1  pos:[5, 50] items:#("Grass_128HV", "Grass_128HV2", "", "") width:150 height:3
+    combobox cb_1  pos:[5, 70] items:#("Grass_128HV", "Grass_128HV2", "", "") width:150 height:3
 
     -----------------------ГРУППА 2-----------------------
     -- Группа материала
-    groupBox grB_2 "Material 2" pos:[180, 10] width:160 height:100
+    groupBox grB_2 "Material 2" pos:[180, 30] width:160 height:100
     -- Чекбокс
-    checkbox mt_2_cb checked:false pos:[240, 10]
+    checkbox mt_2_cb checked:false pos:[240, 30]
     -- Элемент для перетаскивания материала
-    MaterialButton matBtn_2 "Select material" pos:[185, 30] width:150 height:20 filter:material
+    MaterialButton matBtn_2 "Select material" pos:[185, 50] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_2  pos:[185, 50] items:#("gb_sand_bottom", "gb_sand_bottom2", "", "") width:150 height:3
+    combobox cb_2  pos:[185, 70] items:#("gb_sand_bottom", "gb_sand_bottom2", "", "") width:150 height:3
 
         -----------------------ГРУППА 3-----------------------
     -- Группа материала
-    groupBox grB_3 "Material 3" pos:[0, 120] width:160 height:100
+    groupBox grB_3 "Material 3" pos:[0, 140] width:160 height:100
     -- Чекбокс
-    checkbox mt_3_cb checked:false pos:[60, 120]
+    checkbox mt_3_cb checked:false pos:[60, 140]
     -- Элемент для перетаскивания материала
-    MaterialButton matBtn_3 "Select material" pos:[5, 140] width:150 height:20 filter:material
+    MaterialButton matBtn_3 "Select material" pos:[5, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_3  pos:[5, 160] items:#("tratur", "tratur2", "", "") width:150 height:3
+    combobox cb_3  pos:[5, 180] items:#("tratur", "tratur2", "", "") width:150 height:3
 
     -----------------------ГРУППА 4-----------------------
     -- Группа материала
-    groupBox grB_4 "Material 4" pos:[180, 120] width:160 height:100
+    groupBox grB_4 "Material 4" pos:[180, 140] width:160 height:100
     -- Чекбокс
-    checkbox mt_4_cb checked:false pos:[240, 120]
+    checkbox mt_4_cb checked:false pos:[240, 140]
     -- Элемент для перетаскивания материала
-    MaterialButton matBtn_4 "Select material" pos:[185, 140] width:150 height:20 filter:material
+    MaterialButton matBtn_4 "Select material" pos:[185, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_4  pos:[185, 160] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
+    combobox cb_4  pos:[185, 180] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
     ------------------------------------------------------
-    progressbar doit_prog color:green
+    label prgrs_mat ""
+    progressbar materials_prog color:green -- Для материалов
+    label prgrs_models ""
+    progressbar models_prog color:green -- Для моделей
     -- Кнопка применения материала
-    button btnApply "Apply material" pos:[15, 250] width:300
-    -- by EgasVegas
-    label lbl1 "by EgasVegas"  pos:[0, 310] width:150 height:20 align:#center style_sunkenedge: true
+    button btnApply "Apply material"  width:150 align:#center
     ------------------------------------------------------
     on textureMaterialApplicator open do (
         if (mt_2_cb.checked == false) then (
@@ -197,7 +203,7 @@ rollout textureMaterialApplicator "Texture material applicator"(
     on cb_4 entered txt do (
         cb_4.selected = txt
     )
-
+    -----------------------ОБРАБОТЧИКИ ВЫБОРА МАТЕРИАЛОВ-----------------------
     on matBtn_1 picked m do (
         if classof m == GTA_COLSurface then (
             matBtn_1.material = m
@@ -233,9 +239,26 @@ rollout textureMaterialApplicator "Texture material applicator"(
             messageBox "Wrong format."
         )
     )
+    -----------------------ОБРАБОТЧИКИ КНОПОК-----------------------
+    on btn_about pressed do (
+        rollout rol_meChecker_about "CollAddMaterial - About" width:295   (
+
+			label lbl1 "CollAddMaterial 1.0"  height:17
+			label lbl6 "Script features:" pos:[11,33] 
+			label lbl7 "- Mass overlay of materials" pos:[13,53] 
+			label lbl9 "- Choosing the quantity of materials" pos:[13,73] 
+			label lbl10 "- Support for multi-materials and single" pos:[13,93] 
+			label lbl11 "_____________________________"
+			label lbl2 "\xa9 by " pos:[10,133] width:42 height:18
+			HyperLink Goldfish "EgasVegas" pos:[37,133] width:60 height:18 address:"https://t.me/egasvegas" color:(color 10 147 225) hovercolor:(color 94 198 255) visitedcolor:(color 10 147 225)
+            button btn_close "close" pos:[215,133] width:69 height:22
+            on btn_close pressed do DestroyDialog  rol_meChecker_about 
+		)
+        createDialog rol_meChecker_about modal:true 
+    )
 
     on btnApply pressed do (
-        doit_prog.value = 0
+        materials_prog.value = 0
         
         local materialArray = #()
         local textureArray = #()
@@ -291,8 +314,9 @@ rollout textureMaterialApplicator "Texture material applicator"(
             print (textureArray.count)
 
             for i = 1 to materialArray.count do (
-                applyMaterialToPolygonsWithTexture textureArray[i] materialArray[i]
-                doit_prog.value += 100/materialArray.count + 1
+                prgrs_mat.text = materialArray[i] as string
+                applyMaterialToPolygonsWithTexture textureArray[i] materialArray[i] models_prog prgrs_models
+                materials_prog.value += 100/materialArray.count + 1
             )
 
             messageBox "Done!"
@@ -303,4 +327,4 @@ rollout textureMaterialApplicator "Texture material applicator"(
     
 )
 -- Отображение интерфейса
-createdialog textureMaterialApplicator 340 330
+createdialog textureMaterialApplicator 340 350
