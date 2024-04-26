@@ -110,7 +110,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_2 "Select material" pos:[185, 50] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_2  pos:[185, 70] items:#("gb_sand_bottom", "gb_sand_bottom2", "", "") width:150 height:3
+    combobox cb_2  pos:[185, 70] items:#("", "", "", "") width:150 height:3
 
         -----------------------ГРУППА 3-----------------------
     -- Группа материала
@@ -120,7 +120,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_3 "Select material" pos:[5, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_3  pos:[5, 180] items:#("tratur", "tratur2", "", "") width:150 height:3
+    combobox cb_3  pos:[5, 180] items:#("", "", "", "") width:150 height:3
 
     -----------------------ГРУППА 4-----------------------
     -- Группа материала
@@ -130,7 +130,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_4 "Select material" pos:[185, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_4  pos:[185, 180] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
+    combobox cb_4  pos:[185, 180] items:#("", "", "", "") width:150 height:3
     ------------------------------------------------------
     label prgrs_mat ""
     progressbar materials_prog color:green -- Для материалов
