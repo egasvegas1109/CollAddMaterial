@@ -6,16 +6,15 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_
         prgrs_models.text = obj.name
         convertToPoly obj
         weldAndSmoothGroup obj
-        print (format "Материалов %\n" newMaterial.count)
-        print (format "Текстур %\n" textureName.count)        
+        -- print (format "Материалов %\n" newMaterial.count)
+        -- print (format "Текстур %\n" textureName.count)        
 
         if classof obj.material == MultiMaterial then 
         (
             -- Работаем с мультиматериалом
             local multiMat = obj.material
             for k = 1 to newMaterial.count do 
-            (
-                print (k)    
+            (  
                 for i = 1 to multiMat.numsubs do 
                 (
                     local subMat = multiMat[i]
@@ -27,23 +26,19 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_
                     (
                         if isProperty subMat #diffuseMap then 
                         (
-                            print(format "Текстура на модели %\n" (toLower(getFilenameFile(subMat.diffuseMap.fileName))))
-                            print(format "Текстура ожидаемая %\n" (toLower(textureName[j])))
+                            -- print(format "Текстура на модели %\n" (toLower(getFilenameFile(subMat.diffuseMap.fileName))))
+                            -- print(format "Текстура ожидаемая %\n" (toLower(textureName[j])))
                             if classof subMat.diffuseMap == BitmapTex and toLower(getFilenameFile(subMat.diffuseMap.fileName)) == toLower(textureName[j]) then 
                             (
                                 -- Добавляем индекс текстуры в массив для замены
                                 append texturesToReplace i
                             )
                         )
-                        else (
-                            print ("diffuseMap = null")
-                        )
                     )
                     
                     -- Заменяем текстуры только после завершения внутреннего цикла
                     for idx in texturesToReplace do 
                     (
-                        print("ZAMENILI")
                         multiMat[idx] = newMaterial[k] -- Заменяем суб-материал
                     )
                 )
@@ -90,7 +85,6 @@ fn addTexturesToArray checkBox comboBox textureArray = (
         for i = 1 to comboBox.items.count do (
             if (comboBox.items[i] != "") do(
                 append textureArray comboBox.items[i]
-                print(i)
             )
         )
     )
@@ -124,7 +118,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_2 "Select material" pos:[185, 50] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_2  pos:[185, 70] items:#("gb_sand_bottom", "gb_sand_bottom2", "", "") width:150 height:3
+    combobox cb_2  pos:[185, 70] items:#("", "", "", "") width:150 height:3
 
         -----------------------ГРУППА 3-----------------------
     -- Группа материала
@@ -134,7 +128,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_3 "Select material" pos:[5, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_3  pos:[5, 180] items:#("tratur", "tratur2", "", "") width:150 height:3
+    combobox cb_3  pos:[5, 180] items:#("", "", "", "") width:150 height:3
 
     -----------------------ГРУППА 4-----------------------
     -- Группа материала
@@ -144,7 +138,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_4 "Select material" pos:[185, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_4  pos:[185, 180] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
+    combobox cb_4  pos:[185, 180] items:#("", "", "", "") width:150 height:3
     ------------------------------------------------------
     label prgrs_mat ""
     progressbar materials_prog color:green -- Для материалов
@@ -310,8 +304,8 @@ rollout textureMaterialApplicator "CollAddMaterial"(
         -- Проверяем, что было выбрано хотя бы одно сочетание материала и текстуры
         if materialArray.count > 0 and textureArray.count > 0 then (
             -- Вызываем функцию и передаем ей массивы материалов и текстур
-            print (materialArray.count)
-            print (textureArray.count)
+            -- print (materialArray.count)
+            -- print (textureArray.count)
 
             for i = 1 to materialArray.count do (
                 prgrs_mat.text = materialArray[i] as string
