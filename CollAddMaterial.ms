@@ -12,15 +12,12 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_
         if classof obj.material == MultiMaterial then 
         (
             -- Работаем с мультиматериалом
-            local multiMat = obj.material
-            for k = 1 to newMaterial.count do 
-            (  
+            local multiMat = obj.material 
                 for i = 1 to multiMat.numsubs do 
                 (
                     local subMat = multiMat[i]
                     
                     -- Создаем временный массив для хранения индексов текстур, которые нужно заменить
-                    local texturesToReplace = #()
                     
                     for j = 1 to textureName.count do 
                     (
@@ -30,38 +27,24 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_
                             -- print(format "Текстура ожидаемая %\n" (toLower(textureName[j])))
                             if classof subMat.diffuseMap == BitmapTex and toLower(getFilenameFile(subMat.diffuseMap.fileName)) == toLower(textureName[j]) then 
                             (
-                                -- Добавляем индекс текстуры в массив для замены
-                                append texturesToReplace i
+                                multiMat[i] = newMaterial -- Заменяем суб-материал
                             )
                         )
                     )
-                    
-                    -- Заменяем текстуры только после завершения внутреннего цикла
-                    for idx in texturesToReplace do 
-                    (
-                        multiMat[idx] = newMaterial[k] -- Заменяем суб-материал
-                    )
                 )
-            )
         ) else (
             -- Работаем с одиночным материалом
             local mat = obj.material
-            
-            -- Создаем временный массив для хранения индексов текстур, которые нужно заменить
-            local texturesToReplace = #()
-            
-            for j = 1 to textureName.count do (
-                if classof mat.diffuseMap == BitmapTex and mat.diffuseMap.fileName == textureName[j] then (
-                    -- Добавляем индекс текстуры в массив для замены
-                    append texturesToReplace j
+                for j = 1 to textureName.count do 
+                (
+                    if isProperty mat #diffuseMap then 
+                    (
+                        if classof mat.diffuseMap == BitmapTex and toLower(getFilenameFile(mat.diffuseMap.fileName)) == toLower(textureName[j]) then (
+                            obj.material = newMaterial
+                        )
+                    )
                 )
-            )
             
-            -- Заменяем текстуры только после завершения внутреннего цикла
-            for idx in texturesToReplace do 
-            (
-                obj.material = newMaterial[idx] -- Заменяем материал объекта
-            )
         )
         models_prog.value += 100/selection.count + 1
     )
@@ -118,7 +101,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_2 "Select material" pos:[185, 50] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_2  pos:[185, 70] items:#("", "", "", "") width:150 height:3
+    combobox cb_2  pos:[185, 70] items:#("gb_sand_bottom", "gb_sand_bottom2", "", "") width:150 height:3
 
         -----------------------ГРУППА 3-----------------------
     -- Группа материала
@@ -128,7 +111,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_3 "Select material" pos:[5, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_3  pos:[5, 180] items:#("", "", "", "") width:150 height:3
+    combobox cb_3  pos:[5, 180] items:#("tratur", "tratur2", "", "") width:150 height:3
 
     -----------------------ГРУППА 4-----------------------
     -- Группа материала
@@ -138,7 +121,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_4 "Select material" pos:[185, 160] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_4  pos:[185, 180] items:#("", "", "", "") width:150 height:3
+    combobox cb_4  pos:[185, 180] items:#("colis_brusch", "colis_brusch2", "", "") width:150 height:3
     ------------------------------------------------------
     label prgrs_mat ""
     progressbar materials_prog color:green -- Для материалов
@@ -257,43 +240,34 @@ rollout textureMaterialApplicator "CollAddMaterial"(
         local materialArray = #()
         local textureArray = #()
 
-        local materialArray_1 = #() -- Создаем массив для хранения материала 1
         local textureArray_1 = #() -- Создаем массив для хранения списков текстур для материала 1
 
-        local materialArray_2 = #() -- Создаем массив для хранения материала 2
         local textureArray_2 = #() -- Создаем массив для хранения списков текстур для материала 2
 
-        local materialArray_3 = #() -- Создаем массив для хранения материала 3
         local textureArray_3 = #() -- Создаем массив для хранения списков текстур для материала 3
 
-        local materialArray_4 = #() -- Создаем массив для хранения материала 4
         local textureArray_4 = #() -- Создаем массив для хранения списков текстур для материала 4
     
         -- Проверяем состояние чекбокса и добавляем соответствующие материалы и текстуры в массивы
         if mt_1_cb.checked and matBtn_1.material != undefined do (
-            append materialArray_1 matBtn_1.material
+            append materialArray matBtn_1.material
             addTexturesToArray mt_1_cb cb_1 textureArray_1
         )
 
         if mt_2_cb.checked and matBtn_2.material != undefined do (
-            append materialArray_2 matBtn_2.material
+            append materialArray matBtn_2.material
             addTexturesToArray mt_2_cb cb_2 textureArray_2
         )
 
         if mt_3_cb.checked and matBtn_3.material != undefined do (
-            append materialArray_3 matBtn_3.material
+            append materialArray matBtn_3.material
             addTexturesToArray mt_3_cb cb_3 textureArray_3
         )
 
         if mt_4_cb.checked and matBtn_4.material != undefined do (
-            append materialArray_4 matBtn_4.material
+            append materialArray matBtn_4.material
             addTexturesToArray mt_4_cb cb_4 textureArray_4
         )
-        --Создание многомерного массива материалов
-        addArrayToArray materialArray materialArray_1
-        addArrayToArray materialArray materialArray_2
-        addArrayToArray materialArray materialArray_3
-        addArrayToArray materialArray materialArray_4
         
         --Создание многомерного массива текстур
         addArrayToArray textureArray textureArray_1
