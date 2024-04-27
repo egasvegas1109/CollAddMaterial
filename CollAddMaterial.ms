@@ -7,6 +7,18 @@
   vk.com/egasvegas
   t.me/egasvegas
 */
+
+fn weldAndSmoothGroup obj = (
+    obj.weldThreshold=0.001
+    polyOp.weldVertsByThreshold obj #{1..obj.numVerts}
+
+    -- Применение автоматического сглаживания
+    smoothMod = Smooth()
+    smoothMod.autoSmooth = true
+    addModifier obj smoothMod
+    convertToPoly obj
+)
+
 fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_models = 
 (
     models_prog.value = 0
@@ -25,9 +37,6 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_
                 for i = 1 to multiMat.numsubs do 
                 (
                     local subMat = multiMat[i]
-                    
-                    -- Создаем временный массив для хранения индексов текстур, которые нужно заменить
-                    
                     for j = 1 to textureName.count do 
                     (
                         if isProperty subMat #diffuseMap then 
@@ -44,31 +53,18 @@ fn applyMaterialToPolygonsWithTexture textureName newMaterial models_prog prgrs_
         ) else (
             -- Работаем с одиночным материалом
             local mat = obj.material
-                for j = 1 to textureName.count do 
+            for j = 1 to textureName.count do 
+            (
+                if isProperty mat #diffuseMap then 
                 (
-                    if isProperty mat #diffuseMap then 
-                    (
-                        if classof mat.diffuseMap == BitmapTex and toLower(getFilenameFile(mat.diffuseMap.fileName)) == toLower(textureName[j]) then (
-                            obj.material = newMaterial
-                        )
+                    if classof mat.diffuseMap == BitmapTex and toLower(getFilenameFile(mat.diffuseMap.fileName)) == toLower(textureName[j]) then (
+                        obj.material = newMaterial
                     )
                 )
-            
+            )
         )
         models_prog.value += 100/selection.count + 1
     )
-)
-
-
-fn weldAndSmoothGroup obj = (
-    obj.weldThreshold=0.001
-    polyOp.weldVertsByThreshold obj #{1..obj.numVerts}
-
-    -- Применение автоматического сглаживания
-    smoothMod = Smooth()
-    smoothMod.autoSmooth = true
-    addModifier obj smoothMod
-    convertToPoly obj
 )
 
 
@@ -249,13 +245,11 @@ rollout textureMaterialApplicator "CollAddMaterial"(
         local materialArray = #()
         local textureArray = #()
 
-        local textureArray_1 = #() -- Создаем массив для хранения списков текстур для материала 1
-
-        local textureArray_2 = #() -- Создаем массив для хранения списков текстур для материала 2
-
-        local textureArray_3 = #() -- Создаем массив для хранения списков текстур для материала 3
-
-        local textureArray_4 = #() -- Создаем массив для хранения списков текстур для материала 4
+    -- Создаем массивы для хранения списков текстур
+        local textureArray_1 = #()
+        local textureArray_2 = #()
+        local textureArray_3 = #()
+        local textureArray_4 = #()
     
         -- Проверяем состояние чекбокса и добавляем соответствующие материалы и текстуры в массивы
         if mt_1_cb.checked and matBtn_1.material != undefined do (
