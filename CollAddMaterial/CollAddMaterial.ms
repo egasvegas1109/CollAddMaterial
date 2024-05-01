@@ -1,5 +1,5 @@
 /*
- - CollAddMaterials 1.0
+ - CollAddMaterials 1.1
   for 3ds Max 2009+
 
   https://github.com/egasvegas1109/CollAddMaterial
@@ -84,6 +84,34 @@ fn addArrayToArray array arrayChild = (
     )
 )
 
+fn SetINI key value_= (
+    print("MI TUT")
+	try (
+		if  key == "material_1" then (
+            print("change")
+            print(value_)
+			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_1" "1" )
+			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_1" "0" )
+            print(scriptsPath)
+		)
+        if  key == "material_2" then (
+            print("change")
+			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_2" "1" )
+			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_2" "0" )
+		)
+        if  key == "material_3" then (
+            print("change")
+			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_3" "1" )
+			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_3" "0" )
+		)
+        if  key == "material_4" then (
+            print("change")
+			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_4" "1" )
+			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_4" "0" )
+		)
+	) catch (format "error autoSet % %\n" key value_)
+)
+
 -- Создание интерфейса
 rollout textureMaterialApplicator "CollAddMaterial"(
     -- About
@@ -136,36 +164,80 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     button btnApply "Apply material"  width:150 align:#center
     ------------------------------------------------------
     on textureMaterialApplicator open do (
-        if (mt_2_cb.checked == false) then (
+        -- Получение состояний из файла настроек
+        local material_1_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_1"
+        local material_2_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_2"
+        local material_3_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_3"
+        local material_4_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_4"
+
+        
+        print(material_1_status)
+
+        -- Установка состояний чекбоксов и активации/деактивации элементов интерфейса
+        if ((material_1_status as integer) == 1) then (
+            print("OTKRILI")
+            mt_1_cb.checked = true
+            matBtn_1.enabled = true
+            cb_1.enabled = true
+        ) else (
+            print("ZAKRILI")
+            mt_1_cb.checked = false
+            matBtn_1.enabled = false
+            cb_1.enabled = false
+        )
+        
+        if ((material_2_status as integer) == 1) then (
+            mt_2_cb.checked = true
+            matBtn_2.enabled = true
+            cb_2.enabled = true
+        ) else (
+            mt_2_cb.checked = false
             matBtn_2.enabled = false
             cb_2.enabled = false
         )
-        if (mt_3_cb.checked == false) then (
+        
+        if ((material_3_status as integer) == 1) then (
+            mt_3_cb.checked = true
+            matBtn_3.enabled = true
+            cb_3.enabled = true
+        ) else (
+            mt_3_cb.checked = false
             matBtn_3.enabled = false
             cb_3.enabled = false
         )
-        if (mt_4_cb.checked == false) then (
+        
+        if ((material_4_status as integer) == 1) then (
+            mt_4_cb.checked = true
+            matBtn_4.enabled = true
+            cb_4.enabled = true
+        ) else (
+            mt_4_cb.checked = false
             matBtn_4.enabled = false
             cb_4.enabled = false
         )
+        
      )
     -----------------------ОБРАБОТЧИКИ ЧЕКБОКСОВ-----------------------
      on mt_1_cb changed theState do (
+        SetINI "material_1" theState
         matBtn_1.enabled = theState
         cb_1.enabled = theState
      )
 
      on mt_2_cb changed theState do (
+        SetINI "material_2" theState
         matBtn_2.enabled = theState
         cb_2.enabled = theState
      )
 
      on mt_3_cb changed theState do (
+        SetINI "material_3" theState
         matBtn_3.enabled = theState
         cb_3.enabled = theState
      )
 
      on mt_4_cb changed theState do (
+        SetINI "material_4" theState
         matBtn_4.enabled = theState
         cb_4.enabled = theState
      )
@@ -225,7 +297,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     on btn_about pressed do (
         rollout rol_meChecker_about "CollAddMaterial - About" width:295   (
 
-			label lbl1 "CollAddMaterial 1.0"  height:17
+			label lbl1 "CollAddMaterial 1.1"  height:17
 			label lbl6 "Script features:" pos:[11,33] 
 			label lbl7 "- Mass overlay of materials" pos:[13,53] 
 			label lbl9 "- Choosing the quantity of materials" pos:[13,73] 
