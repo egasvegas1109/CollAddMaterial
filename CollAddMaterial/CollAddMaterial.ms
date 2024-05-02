@@ -85,32 +85,54 @@ fn addArrayToArray array arrayChild = (
 )
 
 fn SetINI key value_= (
-    print("MI TUT")
 	try (
 		if  key == "material_1" then (
-            print("change")
-            print(value_)
 			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_1" "1" )
 			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_1" "0" )
-            print(scriptsPath)
 		)
         if  key == "material_2" then (
-            print("change")
 			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_2" "1" )
 			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_2" "0" )
 		)
         if  key == "material_3" then (
-            print("change")
 			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_3" "1" )
 			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_3" "0" )
 		)
         if  key == "material_4" then (
-            print("change")
 			if value_ == true then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_4" "1" )
 			else if value_ == false then (setINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_4" "0" )
 		)
 	) catch (format "error autoSet % %\n" key value_)
 )
+
+fn SetINITextures textureArray1 textureArray2 textureArray3 textureArray4 = (
+    local iniFilePath = (getDir #scripts + "\\CollAddMaterial\\settings.ini") -- Путь к файлу .ini
+    
+    try (
+        -- Сохраняем текстуры для combobox'а 1
+        for i = 1 to textureArray1.count do (
+            setINISetting iniFilePath "TexturesName" ("cb1_" + (i as string)) textureArray1[i]
+        )
+        
+        -- Сохраняем текстуры для combobox'а 2
+        for i = 1 to textureArray2.count do (
+            setINISetting iniFilePath "TexturesName" ("cb2_" + (i as string)) textureArray2[i]
+        )
+        
+        -- Сохраняем текстуры для combobox'а 3
+        for i = 1 to textureArray3.count do (
+            setINISetting iniFilePath "TexturesName" ("cb3_" + (i as string)) textureArray3[i]
+        )
+        
+        -- Сохраняем текстуры для combobox'а 4
+        for i = 1 to textureArray4.count do (
+            setINISetting iniFilePath "TexturesName" ("cb4_" + (i as string)) textureArray4[i]
+        )
+    ) catch (
+        format "error autoSet textures\n"
+    )
+)
+
 
 -- Создание интерфейса
 rollout textureMaterialApplicator "CollAddMaterial"(
@@ -124,7 +146,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -- Элемент для перетаскивания материала
     MaterialButton matBtn_1 "Select material" pos:[5, 50] width:150 height:20 filter:material
     -- Поле для ввода имени текстуры
-    combobox cb_1  pos:[5, 70] items:#("Grass_128HV", "Grass_128HV2", "", "") width:150 height:3
+    combobox cb_1  pos:[5, 70] items:#("", "", "", "") width:150 height:3
 
     -----------------------ГРУППА 2-----------------------
     -- Группа материала
@@ -169,23 +191,18 @@ rollout textureMaterialApplicator "CollAddMaterial"(
         local material_2_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_2"
         local material_3_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_3"
         local material_4_status = getINISetting (scriptsPath + "CollAddMaterial\settings.ini") "MaterialStatus" "material_4"
-
-        
-        print(material_1_status)
-
+    
         -- Установка состояний чекбоксов и активации/деактивации элементов интерфейса
         if ((material_1_status as integer) == 1) then (
-            print("OTKRILI")
             mt_1_cb.checked = true
             matBtn_1.enabled = true
             cb_1.enabled = true
         ) else (
-            print("ZAKRILI")
             mt_1_cb.checked = false
             matBtn_1.enabled = false
             cb_1.enabled = false
         )
-        
+    
         if ((material_2_status as integer) == 1) then (
             mt_2_cb.checked = true
             matBtn_2.enabled = true
@@ -195,7 +212,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
             matBtn_2.enabled = false
             cb_2.enabled = false
         )
-        
+    
         if ((material_3_status as integer) == 1) then (
             mt_3_cb.checked = true
             matBtn_3.enabled = true
@@ -205,7 +222,7 @@ rollout textureMaterialApplicator "CollAddMaterial"(
             matBtn_3.enabled = false
             cb_3.enabled = false
         )
-        
+    
         if ((material_4_status as integer) == 1) then (
             mt_4_cb.checked = true
             matBtn_4.enabled = true
@@ -216,7 +233,48 @@ rollout textureMaterialApplicator "CollAddMaterial"(
             cb_4.enabled = false
         )
         
-     )
+
+        -- Получение названий текстур из файла настроек и загрузка их в combobox'ы
+        local iniFilePath = (getDir #scripts + "\\CollAddMaterial\\settings.ini") -- Путь к файлу .ini
+        
+        local textureList_cb1 = #()
+        for i = 1 to 4 do (
+            local textureName = getINISetting iniFilePath "TexturesName" ("cb1_" + i as string)
+            if textureName != undefined do (
+                append textureList_cb1 textureName
+            )
+        )
+        cb_1.items = textureList_cb1
+
+        local textureList_cb2 = #()
+        for i = 1 to 4 do (
+            local textureName = getINISetting iniFilePath "TexturesName" ("cb2_" + i as string)
+            if textureName != undefined do (
+                append textureList_cb2 textureName
+            )
+        )
+        cb_2.items = textureList_cb2
+
+        local textureList_cb3 = #()
+        for i = 1 to 4 do (
+            local textureName = getINISetting iniFilePath "TexturesName" ("cb3_" + i as string)
+            if textureName != undefined do (
+                append textureList_cb3 textureName
+            )
+        )
+        cb_3.items = textureList_cb3
+
+        local textureList_cb4 = #()
+        for i = 1 to 4 do (
+            local textureName = getINISetting iniFilePath "TexturesName" ("cb4_" + i as string)
+            if textureName != undefined do (
+                append textureList_cb4 textureName
+            )
+        )
+        cb_4.items = textureList_cb4
+
+    )
+    
     -----------------------ОБРАБОТЧИКИ ЧЕКБОКСОВ-----------------------
      on mt_1_cb changed theState do (
         SetINI "material_1" theState
@@ -244,19 +302,33 @@ rollout textureMaterialApplicator "CollAddMaterial"(
     -----------------------ОБРАБОТЧИКИ СПИСКОВ-----------------------
     on cb_1 entered txt do (
         cb_1.selected = txt
+        -- Вызываем функцию SetINITextures с массивами текстур для каждого combobox'а
+        local textureArray1 = #(cb_1.items[1], cb_1.items[2], cb_1.items[3], cb_1.items[4])
+        SetINITextures textureArray1 #() #() #()
     )
-
+    
     on cb_2 entered txt do (
         cb_2.selected = txt
+        -- Вызываем функцию SetINITextures с массивами текстур для каждого combobox'а
+        local textureArray2 = #(cb_2.items[1], cb_2.items[2], cb_2.items[3], cb_2.items[4])
+        SetINITextures #() textureArray2 #() #()
     )
-
+    
     on cb_3 entered txt do (
         cb_3.selected = txt
+        -- Вызываем функцию SetINITextures с массивами текстур для каждого combobox'а
+        local textureArray3 = #(cb_3.items[1], cb_3.items[2], cb_3.items[3], cb_3.items[4])
+        SetINITextures #() #() textureArray3 #()
     )
-
+    
     on cb_4 entered txt do (
         cb_4.selected = txt
+        -- Вызываем функцию SetINITextures с массивами текстур для каждого combobox'а
+        local textureArray4 = #(cb_4.items[1], cb_4.items[2], cb_4.items[3], cb_4.items[4])
+        SetINITextures #() #() #() textureArray4
     )
+    
+    
     -----------------------ОБРАБОТЧИКИ ВЫБОРА МАТЕРИАЛОВ-----------------------
     on matBtn_1 picked m do (
         if classof m == GTA_COLSurface then (
@@ -301,11 +373,12 @@ rollout textureMaterialApplicator "CollAddMaterial"(
 			label lbl6 "Script features:" pos:[11,33] 
 			label lbl7 "- Mass overlay of materials" pos:[13,53] 
 			label lbl9 "- Choosing the quantity of materials" pos:[13,73] 
-			label lbl10 "- Support for multi-materials and single" pos:[13,93] 
-			label lbl11 "_____________________________"
-			label lbl2 "\xa9 by " pos:[10,133] width:42 height:18
-			HyperLink Goldfish "EgasVegas" pos:[37,133] width:60 height:18 address:"https://t.me/egasvegas" color:(color 10 147 225) hovercolor:(color 94 198 255) visitedcolor:(color 10 147 225)
-            button btn_close "close" pos:[215,133] width:69 height:22
+			label lbl10 "- Support for multi-materials and single" pos:[13,93]
+            label lbl11 "- Saving settings" pos:[13,113] 
+			label lbl12 "_____________________________"
+			label lbl2 "\xa9 by " pos:[10,153] width:42 height:18
+			HyperLink Goldfish "EgasVegas" pos:[37,153] width:60 height:18 address:"https://t.me/egasvegas" color:(color 10 147 225) hovercolor:(color 94 198 255) visitedcolor:(color 10 147 225)
+            button btn_close "close" pos:[215,153] width:69 height:22
             on btn_close pressed do DestroyDialog  rol_meChecker_about 
 		)
         createDialog rol_meChecker_about modal:true 
