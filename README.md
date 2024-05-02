@@ -4,9 +4,10 @@ CollAddMaterial is a script for 3Ds Max that allows you to overlay GTA SA collis
 * **Support for multi and single materials:** the ability to work with multimaterials and single.
 * **Mass overlay of materials:** the script allows you to apply materials to several models at once.
 * **Adjustable amount of materials:** support for overlapping multiple materials at once (up to 4).
+* **Saving settings:** the statuses of materials and textures will be saved.
 
 ## Installation
-Download and move the script CollAddMaterial.ms to the folder "Autodesk\3ds Max 20**\scripts" **and to import models with materials, you need to install** [KAM's GTA Scripts](https://gtaforums.com/topic/907323-rel-kams-gta-scripts-2018-upd-31052020/)
+Download and move the "CollAddMaterial" folder to the folder "Autodesk\3ds Max 20**\scripts" **and to import models with materials, you need to install** [KAM's GTA Scripts](https://gtaforums.com/topic/907323-rel-kams-gta-scripts-2018-upd-31052020/)
 
 ## How to use
 * **Import the model:**
